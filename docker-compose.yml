@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mindspace:
-    # build: .
+    build: .
     container_name: mindspace_app
     image: registry.cn-shenzhen.aliyuncs.com/jicky/mindspace:latest
     ports:
