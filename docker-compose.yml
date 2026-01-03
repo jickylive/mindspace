@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  mindspace:
+    build: .
+    container_name: mindspace_app
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data  # 挂载数据库目录，确保容器重启后数据不丢失
+      - ./content.csv:/app/content.csv # 挂载内容源，方便直接在宿主机修改 CSV
+    environment:
+      - DATABASE_PATH=/app/data/mindspace.db
+      - APP_PORT=5000
+    restart: always

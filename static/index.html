@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { background: #111; color: #f0f0f0; font-family: "Noto Serif SC", serif; height: 100vh; margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; }
+        .card { width: 80%; max-width: 800px; text-align: center; animation: fadeIn 2s; }
+        h1 { font-size: 3.5rem; letter-spacing: 8px; margin: 20px 0; border-left: 4px solid #d4af37; padding-left: 20px; }
+        .analysis { font-size: 1.2rem; color: #aaa; line-height: 1.8; text-align: left; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px; }
+        .footer { position: absolute; bottom: 40px; width: 100%; display: flex; justify-content: space-around; align-items: center; }
+        #qrcode { width: 100px; border: 5px solid white; border-radius: 4px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div id="author" style="color: #d4af37;"></div>
+        <h1 id="content">载入中...</h1>
+        <div id="analysis" class="analysis"></div>
+    </div>
+    <div class="footer">
+        <div id="comment_box"></div>
+        <img id="qrcode" alt="扫码互动">
+    </div>
+    <script>
+        async function refresh() {
+            const r = await fetch('/api/today');
+            const d = await r.json();
+            document.getElementById('content').innerText = d.content;
+            document.getElementById('author').innerText = `${d.author} · ${d.title}`;
+            document.getElementById('analysis').innerText = d.analysis;
+            document.getElementById('qrcode').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href + 'submit.html?id=' + d.id)}`;
+            if(d.comments.length) document.getElementById('comment_box').innerHTML = `最新感悟：${d.comments[0].body} —— ${d.comments[0].user}`;
+        }
+        refresh(); setInterval(refresh, 600000); // 10分钟刷新一次
+    </script>
+</body>
+</html>
