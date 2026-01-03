@@ -1,5 +1,5 @@
 # 1. 使用多架构支持良好的官方轻量镜像
-FROM python:3.9-slim
+FROM registry.cn-shenzhen.aliyuncs.com/aliyun_google/python:3.9-slim
 
 # 2. 设置环境变量
 # 防止 Python 产生 .pyc 编译文件
@@ -19,6 +19,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
+
+配置 pip 指向阿里云镜像源（加速 build 过程）
+RUN pip install --upgrade pip -i https://mirrors.aliyun.com/pypi/simple/ \
+    && pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+    
 # 5. 复制依赖清单并安装
 # 利用 Docker 缓存机制，只有 requirements.txt 变化时才重新安装
 COPY requirements.txt .
