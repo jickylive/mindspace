@@ -1,11 +1,11 @@
 # 1. 使用多架构支持良好的官方轻量镜像
-# FROM registry.cn-shenzhen.aliyuncs.com/aliyun_google/python:3.9-slim
+FROM python:3.9-slim AS builder
 
 # 尝试使用南京大学或上海交大的代理地址
 # FROM docker.nju.edu.cn/library/python:3.9-slim
 
 # 或者使用 DaoCloud 镜像
-FROM docker.m.daocloud.io/library/python:3.9-slim AS builder
+# FROM docker.m.daocloud.io/library/python:3.9-slim AS builder
 
 # 2. 设置环境变量
 # 防止 Python 产生 .pyc 编译文件
@@ -19,28 +19,12 @@ ENV DATABASE_PATH=/app/data/mindspace.db
 WORKDIR /app
 
 # 4. 安装系统基础工具（可选，如需在容器内进行简单调试）
-# 使用阿里云的 Debian 软件源镜像加速 apt-get 操作
-RUN if [ -f /etc/apt/sources.list ]; then \
-        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list; \
-    fi && \
-    if [ -f /etc/apt/sources.list.d/debian.sources ]; then \
-        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources; \
-    fi && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends gcc python3-dev
-
-
 # 对于多架构构建，避免安装特定架构的二进制库，尽量依赖 pip 编译
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     python3-dev \
     && rm -rf /var/lib/apt/lists/*
-
-
-# 配置 pip 指向阿里云镜像源（加速 build 过程）
-RUN pip install --upgrade pip -i https://mirrors.aliyun.com/pypi/simple/ \
-    && pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
-    
+ 
 # 5. 复制依赖清单并安装
 # 利用 Docker 缓存机制，只有 requirements.txt 变化时才重新安装
 COPY requirements.txt .
@@ -48,6 +32,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # 6. 复制项目代码
+COPY --from=builder /root/.local /root/.local
 COPY . .
 
 # 7. 预创建数据目录并设置权限

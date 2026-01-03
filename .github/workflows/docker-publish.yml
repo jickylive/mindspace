@@ -1,0 +1,49 @@
+name: Build and Push to Aliyun ACR
+
+on:
+  push:
+    tags:
+      - 'v*' # 当你推送以 v 开头的标签时触发，如 v1.0.1
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 1. 登录阿里云仓库
+      - name: Login to Aliyun ACR
+        uses: aliyun/acr-login@v1
+        with:
+          login-server: ${{ secrets.ALIBABA_CLOUD_REGISTRY }}
+          username: ${{ secrets.ALIBABA_CLOUD_USERNAME }}
+          password: ${{ secrets.ALIBABA_CLOUD_PASSWORD }}
+
+      # 2. 提取元数据（自动生成标签）
+      # 这步会自动将你的 git tag 映射为镜像的 tag，并额外生成一个 latest
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.ALIBABA_CLOUD_REGISTRY }}/jicky/mindspace
+          tags: |
+            type=ref,event=tag
+            type=raw,value=latest
+
+      # 3. 设置 Docker Buildx (支持多架构)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 4. 构建并推送镜像
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # 这里可以同时推送到 git tag 版本和 latest
+          tags: ${{ id.meta.outputs.tags }}
+          # 如果需要支持 ARM 架构，取消下面一行的注释
+          platforms: linux/amd64,linux/arm64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
