@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 
-配置 pip 指向阿里云镜像源（加速 build 过程）
+# 配置 pip 指向阿里云镜像源（加速 build 过程）
 RUN pip install --upgrade pip -i https://mirrors.aliyun.com/pypi/simple/ \
     && pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
     
