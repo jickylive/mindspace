@@ -32,7 +32,6 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # 6. 复制项目代码
-COPY --from=builder /root/.local /root/.local
 COPY . .
 
 # 7. 预创建数据目录并设置权限
