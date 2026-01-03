@@ -2,8 +2,9 @@ version: '3.8'
 
 services:
   mindspace:
-    build: .
+    # build: .
     container_name: mindspace_app
+    image: ghcr.io/jickylive/mindspace:v1.0.2
     ports:
       - "5001:5001"
     volumes:
