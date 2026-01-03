@@ -1,5 +1,11 @@
 # 1. 使用多架构支持良好的官方轻量镜像
-FROM registry.cn-shenzhen.aliyuncs.com/aliyun_google/python:3.9-slim
+# FROM registry.cn-shenzhen.aliyuncs.com/aliyun_google/python:3.9-slim
+
+# 尝试使用南京大学或上海交大的代理地址
+FROM docker.nju.edu.cn/library/python:3.9-slim
+
+# 或者使用 DaoCloud 镜像
+# FROM docker.m.daocloud.io/library/python:3.9-slim
 
 # 2. 设置环境变量
 # 防止 Python 产生 .pyc 编译文件
