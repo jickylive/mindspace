@@ -16,4 +16,4 @@ RUN mkdir -p /app/data
 
 # 6. 容器启动时：先执行同步脚本入库，再启动 Web 服务
 # 使用 gunicorn 提升在高并发下的稳定性
-CMD python sync_content.py && gunicorn -w 4 -b 0.0.0.0:5000 app:app
+CMD python sync_content.py && gunicorn -w 4 -b 0.0.0.0:5001 app:app
