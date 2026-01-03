@@ -1,0 +1,20 @@
+name: Sync to Aliyun Codeup
+
+on: [push, delete] # 触发条件：推送或删除分支时
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # 必须获取完整历史，否则无法推送全量分支
+
+      - name: Push to Codeup
+        run: |
+          # 这里的 URL 建议通过 Secret 注入，保证安全性
+          git remote add codeup ${{ secrets.CODEUP_TOKEN }}
+          # 推送所有分支和标签
+          git push codeup --all --force
+          git push codeup --tags --force
