@@ -5,7 +5,7 @@
 # FROM docker.nju.edu.cn/library/python:3.9-slim
 
 # 或者使用 DaoCloud 镜像
-FROM docker.m.daocloud.io/library/python:3.9-slim
+FROM docker.m.daocloud.io/library/python:3.9-slim AS builder
 
 # 2. 设置环境变量
 # 防止 Python 产生 .pyc 编译文件
@@ -19,6 +19,12 @@ ENV DATABASE_PATH=/app/data/mindspace.db
 WORKDIR /app
 
 # 4. 安装系统基础工具（可选，如需在容器内进行简单调试）
+# 使用阿里云的 Debian 软件源镜像加速 apt-get 操作
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends gcc python3-dev
+
+
 # 对于多架构构建，避免安装特定架构的二进制库，尽量依赖 pip 编译
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
